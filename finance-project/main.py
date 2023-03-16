@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from api.users import users_router
+
 
 app = FastAPI(
     debug=True,
@@ -8,6 +10,10 @@ app = FastAPI(
     version="0.0.1",
 )
 
+app.include_router(users_router)
+
+
 if __name__ == "__main__":
     import subprocess
+
     subprocess.run(["uvicorn", "main:app", "--reload"])

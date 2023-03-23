@@ -13,9 +13,10 @@ class UserTestCase(unittest.TestCase):
         # assertion
         self.assertEqual(username, actual_username)
 
-    @unittest.skip("TODO: Homework")
     def test_it_sets_empty_list_if_we_do_not_specify_stock(self):
-        pass
+        user = User("random-username")
+        actual_stocks = user.stocks
+        self.assertEqual([], actual_stocks)
 
     @unittest.skip("TODO: Homework")
     def test_it_sets_the_stocks_we_give(self):

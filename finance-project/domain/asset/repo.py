@@ -2,6 +2,10 @@ import sqlite3
 from domain.asset.asset import Asset
 from domain.user.user import User
 
+# Refactor this class
+# extract the sqlite code from here to the persistence layer
+# also create a class which can save these assets in a file with the users
+# this code should have automated tests
 
 class AssetRepo:
     def add_to_user(self, user: User, asset: Asset):

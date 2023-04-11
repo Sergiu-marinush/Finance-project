@@ -32,7 +32,13 @@ class AssetRepo:
         table = f"{user.id}-assets".replace("-", "_")
         with sqlite3.connect(f"main_users.db") as conn:
             cursor = conn.cursor()
-            cursor.execute(f"SELECT * FROM '{table}'")
+            try:
+                cursor.execute(f"SELECT * FROM '{table}'")
+            except sqlite3.OperationalError as e:
+                if "no such table" in str(e):
+                    return []
+                else:
+                    raise e
             assets_info = cursor.fetchall()
         assets = [Asset(
             ticker=x[0],

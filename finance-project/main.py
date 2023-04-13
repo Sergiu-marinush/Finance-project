@@ -1,5 +1,9 @@
 import logging
 from fastapi import FastAPI, Request
+from fastapi_utils.tasks import repeat_every
+import subprocess
+import os
+import time
 from api.users import users_router
 from api.assets import assets_router
 from domain.user.factory import InvalidUsername
@@ -30,9 +34,20 @@ def return_invalid_username(_: Request, e: InvalidUsername):
     )
 
 
-if __name__ == "__main__":
-    import subprocess
+@app.on_event("startup")
+@repeat_every(seconds=60 * 60 * 24)
+def clean_images_older_than_24h():
+    files = os.listdir(".")
+    graphs = [f for f in files if f.endswith(".png")]
+    current_posix_time = time.time()
+    ago_24h = current_posix_time - 60 * 60 * 24
+    for g in graphs:
+        g_creation_time = os.path.getctime(g)
+        if g_creation_time < ago_24h:
+            os.remove(g)
 
+
+if __name__ == "__main__":
     logging.info("Starting webserver ...")
     try:
         subprocess.run(["uvicorn", "main:app", "--reload"])

@@ -1,17 +1,16 @@
 import json
 import uuid
-
+from singleton import singleton
 from domain.asset.repo import AssetRepo
 from domain.user.factory import UserFactory
 from domain.user.persistance_interface import UserPersistenceInterface
 from domain.user.user import User
 
 
-# TODO (not homework) singleton
-
-
+@singleton
 class UserRepo:
     def __init__(self, persistence: UserPersistenceInterface):
+        print("Init user repo")
         self.__persistence = persistence
         self.__users = None
 
@@ -19,8 +18,8 @@ class UserRepo:
         # TODO homework, refactor to not have duplicate code + add for get_by_id
         if self.__users is None:
             self.__users = self.__persistence.get_all()
-        self.__users.append(new_user)
         self.__persistence.add(new_user)
+        self.__users.append(new_user)
 
     def get_all(self) -> list[User]:
         if self.__users is None:

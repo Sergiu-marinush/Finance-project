@@ -12,4 +12,4 @@ class UserPersistenceInterface(abc.ABC):
     def get_all(self) -> list[User]:
         pass
 
-    #TODO Homework, delete and edit
+    # TODO Homework, delete and edit

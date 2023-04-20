@@ -29,14 +29,6 @@ class Asset:
 
     @property
     def current_price(self) -> float:
-        # lazy - loading
-        # dict
-        # with keys =['currency', 'dayHigh', 'dayLow', 'exchange',
-        # 'fiftyDayAverage', 'lastPrice', 'lastVolume', 'marketCap',
-        # 'open', 'previousClose', 'quoteType', 'regularMarketPreviousClose',
-        # 'shares', 'tenDayAverageVolume', 'threeMonthAverageVolume', 'timezone',
-        # 'twoHundredDayAverage', 'yearChange', 'yearHigh', 'yearLow']
-
         price = self.__info["lastPrice"]
         return round(price, 2)
 
@@ -52,5 +44,31 @@ class Asset:
     def fifty_day_price(self) -> float:
         return self.__info["fiftyDayAverage"]
 
-    #TODO a property, in percentage how much it went up or down
-    # current_price & closed_price
+    @property
+    def today_low_price(self) -> float:
+        today_low_price = self.__info["dayLow"]
+        return round(today_low_price, 2)
+
+    @property
+    def today_high_price(self) -> float:
+        today_high_price = self.__info["dayHigh"]
+        return round(today_high_price, 2)
+
+    @property
+    def open_price(self) -> float:
+        open_price = self.__info["open"]
+        return round(open_price, 2)
+
+    @property
+    def price_difference(self) -> str:
+        difference = (self.closed_price - self.current_price) / self.closed_price * 100
+        return f"{round(difference, 2)}%"
+
+    @property
+    def nr(self) -> float:
+        return self.__nr
+
+    @property
+    def sector(self) -> str:
+        return self.__sector
+

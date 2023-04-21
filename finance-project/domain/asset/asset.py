@@ -28,6 +28,14 @@ class Asset:
         return self.__country
 
     @property
+    def nr(self) -> float:
+        return self.__nr
+
+    @property
+    def sector(self) -> str:
+        return self.__sector
+
+    @property
     def current_price(self) -> float:
         price = self.__info["lastPrice"]
         return round(price, 2)
@@ -64,11 +72,4 @@ class Asset:
         difference = (self.closed_price - self.current_price) / self.closed_price * 100
         return f"{round(difference, 2)}%"
 
-    @property
-    def nr(self) -> float:
-        return self.__nr
-
-    @property
-    def sector(self) -> str:
-        return self.__sector
 

@@ -2,43 +2,48 @@ from pydantic import BaseModel, Field
 from uuid import UUID
 
 
-#TODO add the field with description, aprox half
+class BaseConfig:
+    orm_mode = True
+
+
 class UserAdd(BaseModel):
     username: str = Field(description="Alphanumeric username between 6 and 20 chars")
 
 
-class AssetInfoBase(BaseModel):
+class AssetInfoCommon(BaseModel):
     ticker: str
     name: str
     country: str
-    # TODO refactor to not have duplicate code
-
-    class Config:
-        orm_mode = True
 
 
 class AssetAdd(BaseModel):
     ticker: str
 
 
-class AssetInfoUser(AssetInfoBase):
+class AssetInfoUser(AssetInfoCommon):
     units: float
 
+    class Config(BaseConfig):
+        pass
 
-class AssetInfoPrice(AssetInfoBase):
+
+class AssetInfoPrice(AssetInfoCommon):
     current_price: float
     currency: str
-    today_low_price: float
-    today_high_price: float
-    open_price: float
+    today_low_price: float = Field(description="The lowest price reached today")
+    today_high_price: float = Field(description="The highest price reached today")
+    open_price: float = Field(description="The price at the beginning of the day")
     closed_price: float
     fifty_day_price: float
+
+    class Config(BaseConfig):
+        pass
 
 
 class UserInfo(BaseModel):
     id: UUID
     username: str
-    stocks: list[AssetInfoBase]
+    stocks: list[AssetInfoCommon]
 
-    class Config:
-        orm_mode = True
+    class Config(BaseConfig):
+        pass

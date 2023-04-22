@@ -1,10 +1,8 @@
 import unittest
-import uuid
 from domain.user.factory import UserFactory, InvalidUsername
 from domain.user.user import User
 
 
-# TODO Update tests
 class UserFactoryTestCase(unittest.TestCase):
     def test_it_creates_user_if_the_username_is_between_6_and_20_chars(self):
         username = "between-6-and-20"
@@ -45,21 +43,17 @@ class UserFactoryTestCase(unittest.TestCase):
         with self.assertRaises(InvalidUsername) as context:
             factory.make_new(username)
         self.assertEqual(
-            "Username should only contain alphanumeric characters or '-' ",
+            "Username should only contain alphanumeric characters or '-'",
             str(context.exception),
         )
 
     def test_make_from_persistence(self):
         factory = UserFactory()
-        user_id = uuid.uuid4()
-        username = "Sergiu-112"
-        stocks = ["MSFT", "AAPL", "AMZN"]
-        info = (str(user_id), username, stocks)
-        actual_user = factory.make_from_persistance(info)
-        self.assertIsInstance(actual_user, User)
-        self.assertEqual(actual_user.id, user_id)
-        self.assertEqual(actual_user.username, username)
-        self.assertEqual(actual_user.stocks, stocks)
+        info = (123, "johndoe")
+        user = factory.make_from_persistence(info)
+        self.assertIsInstance(user, User)
+        self.assertEqual(user.id, 123)
+        self.assertEqual(user.username, "johndoe")
 
 
 if __name__ == "__main__":

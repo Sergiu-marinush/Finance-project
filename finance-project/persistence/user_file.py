@@ -14,7 +14,7 @@ class UserPersistenceFile(UserPersistenceInterface):
                 contents = f.read()
             users_info = json.loads(contents)
             factory = UserFactory()
-            return [factory.make_from_persistance(x) for x in users_info]
+            return [factory.make_from_persistence(x) for x in users_info]
         except:
             # TODO Homework, log error
             return []

@@ -1,5 +1,6 @@
 import uuid
 from domain.user.user import User
+import logging
 
 
 class InvalidUsername(Exception):
@@ -9,18 +10,22 @@ class InvalidUsername(Exception):
 class UserFactory:
     def make_new(self, username: str) -> User:
         if len(username) < 6:
-            raise InvalidUsername("Username should have more than 6 characters")
+            error_msg = "Username should have more than 6 characters"
+            logging.error(error_msg)
+            raise InvalidUsername(error_msg)
         elif len(username) > 20:
-            raise InvalidUsername("Username should have less than 20 characters")
+            error_msg = "Username should have less than 20 characters"
+            logging.error(error_msg)
+            raise InvalidUsername(error_msg)
         for i in username:
             if not (i.isalnum() or i == "-"):
-                raise InvalidUsername(
-                    "Username should only contain alphanumeric characters or '-' "
-                )
+                error_msg = "Username should only contain alphanumeric characters or '-'"
+                logging.error(error_msg)
+                raise InvalidUsername(error_msg)
         user_uuid = uuid.uuid4()
         return User(user_uuid, username)
 
-    def make_from_persistance(self, info: tuple) -> User:
+    def make_from_persistence(self, info: tuple) -> User:
         return User(
             uuid=info[0],
             username=info[1],

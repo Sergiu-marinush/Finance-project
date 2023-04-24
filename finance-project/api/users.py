@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends
-
+from fastapi import APIRouter, Depends, HTTPException
+import logging
 from domain.asset.factory import AssetFactory
 from domain.asset.repo import AssetRepo
 from domain.user.repo import UserRepo
@@ -7,6 +7,12 @@ from domain.user.factory import UserFactory
 from api.models import UserAdd, UserInfo, AssetInfoUser, AssetAdd
 from persistence.user_file import UserPersistenceFile
 from persistence.user_sqlite import UserPersistenceSqlite
+
+logging.basicConfig(
+    filename="finance.log",
+    level=logging.DEBUG,
+    format="%(asctime)s _ %(levelname)s _ %(name)s _ %(message)s",
+)
 
 users_router = APIRouter(prefix="/users")
 
@@ -22,7 +28,7 @@ def get_all_users(repo=Depends(get_user_repo)):
     return repo.get_all()
 
 
-# create POST /<user_id>/stocks
+# TODO create POST /<user_id>/stocks
 # the user can add a stock to its portfolio, by giving the ticker and the number of units it has
 # save the country, full name of the company
 # when we get a specific user we get the price of every stock the user has and the money it has on it
@@ -40,9 +46,15 @@ def create_a_user(new_user: UserAdd, repo=Depends(get_user_repo)):
     return user
 
 
-# TODO delete a user, DELETE /users/{user_id}
+@users_router.put("/{user_id}", response_model=UserInfo)
+def edit_user(user_id: str, username: str, repo=Depends(get_user_repo)):
+    repo.edit(user_id, username)
+    return repo.get_by_id(user_id)
 
-# TODO fix api, return asset info
+
+@users_router.delete("/{user_id}")
+def delete_a_user(user_id: str, repo=Depends(get_user_repo)):
+    repo.delete(user_id)
 
 
 @users_router.post("/{user_id}/assets", response_model=AssetInfoUser)
@@ -52,3 +64,5 @@ def add_asset_to_user(user_id: str, asset: AssetAdd, repo=Depends(get_user_repo)
     # user.add_stock(new_asset)
     AssetRepo().add_to_user(user, new_asset)
     return new_asset
+
+

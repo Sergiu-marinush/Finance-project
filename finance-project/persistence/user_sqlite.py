@@ -1,7 +1,15 @@
 import sqlite3
+import logging
 from domain.user.persistance_interface import UserPersistenceInterface
 from domain.user.user import User
 from domain.user.factory import UserFactory
+
+
+logging.basicConfig(
+    filename="finance.log",
+    level=logging.DEBUG,
+    format="%(asctime)s _ %(levelname)s _ %(name)s _ %(message)s",
+)
 
 
 class UserPersistenceSqlite(UserPersistenceInterface):
@@ -27,9 +35,39 @@ class UserPersistenceSqlite(UserPersistenceInterface):
                 cursor.execute(f"INSERT INTO users (id, username) VALUES ('{user.id}','{user.username}')")
             except sqlite3.OperationalError as e:
                 if "no such table" in str(e):
+                    logging.warning(f"Table users does not exist in database. Creating it...")
                     cursor.execute("CREATE TABLE users (id TEXT PRIMARY KEY, username TEXT NOT NULL)")
+                    logging.info("Table users created in database.")
                 else:
+                    logging.error(f"Error adding user with id {user.id}: {e}")
                     raise e
                 cursor.execute(f"INSERT INTO users (id, username) VALUES ('{user.id}','{user.username}')")
+                logging.info(f"User with id {user.id} and username {user.username} added to database.")
             conn.commit()
+
+    def edit(self, user_id: User.id, username: str):
+        with sqlite3.connect("main_users.db") as conn:
+            cursor = conn.cursor()
+            try:
+                cursor.execute(f"UPDATE users SET (username)='{username}' WHERE id='{user_id}'")
+            except sqlite3.OperationalError as e:
+                raise e
+            conn.commit()
+
+    def delete(self, user_id: User.id):
+        with sqlite3.connect("main_users.db") as conn:
+            cursor = conn.cursor()
+            try:
+                cursor.execute(f"SELECT * FROM users WHERE id='{user_id}'")
+                user_info = cursor.fetchone()
+                if user_info is None:
+                    logging.warning(f"User with id {user_id} not found in database")
+                    return 404
+                else:
+                    cursor.execute(f"DELETE FROM users WHERE id='{user_id}'")
+            except sqlite3.OperationalError as e:
+                logging.error(f"Error deleting user with id {user_id}: {e}")
+                raise e
+            conn.commit()
+            logging.info(f"User with id {user_id} successfully deleted from database")
 

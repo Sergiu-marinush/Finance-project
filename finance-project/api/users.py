@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 import logging
+import json
 from domain.asset.factory import AssetFactory
 from domain.asset.repo import AssetRepo
 from domain.user.repo import UserRepo
@@ -17,9 +18,26 @@ logging.basicConfig(
 users_router = APIRouter(prefix="/users")
 
 
+class InvalidPersistenceType(Exception):
+    pass
+
+
+def check_persistence(file_path):
+    with open(file_path, 'r') as choose_config:
+        persistence_type = choose_config.read()
+        data = json.loads(persistence_type)
+        if "sqlite" in str(data["persistence_type"]):
+            return UserPersistenceSqlite()
+        elif "json" in str(data["persistence_type"]):
+            return UserPersistenceFile("main_users.json")
+        else:
+            raise InvalidPersistenceType("Unrecognized persistence config type. Please check config.json file.")
+
+
 def get_user_repo() -> UserRepo:
+    user_persistence = check_persistence("config.json")
     # user_persistence = UserPersistenceFile("main_users.json")
-    user_persistence = UserPersistenceSqlite()
+    # user_persistence = UserPersistenceSqlite()
     return UserRepo(user_persistence)
 
 

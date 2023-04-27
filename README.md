@@ -21,6 +21,19 @@ pip install -r requirements.txt
 
 ```
 
-This project uses FastAPI & uvicorn,
+For Linux, steps to deploy:
+```
+git clone <git_repo_url>
+cd Finance-project
+python3 -m venv env/
+source env/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+This project uses FastAPI, uvicorn, Yfinance, matplotlib, yahooquery:
 
 FastAPI docs: https://fastapi.tiangolo.com/
+Yfinance docs: https://pypi.org/project/yfinance/
+Matplotlib docs: https://matplotlib.org/stable/index.html
+yahooquery docs: https://yahooquery.dpguthrie.com/

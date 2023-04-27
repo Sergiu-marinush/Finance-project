@@ -1,7 +1,6 @@
 from domain.user.factory import UserFactory
 from domain.user.persistance_interface import UserPersistenceInterface
 from domain.user.user import User
-from domain.user.repo import UserIdNotFound
 import json
 import logging
 import uuid
@@ -40,14 +39,21 @@ class UserPersistenceFile(UserPersistenceInterface):
     def delete(self, user_id: User.id):
         current_users = self.get_all()
         updated_users = [u for u in current_users if u.id != uuid.UUID(hex=user_id)]
-        users_info = [(str(u.id), u.username, u.stocks) for u in updated_users]
-        users_json = json.dumps(users_info)
-        with open(self.__file_path, "w") as f:
-            f.write(users_json)
+        if len(updated_users) == len(current_users):
+            logging.warning(f"User with ID '{user_id}' not found")
+            return 404
+        else:
+            users_info = [(str(u.id), u.username, u.stocks) for u in updated_users]
+            users_json = json.dumps(users_info)
+            with open(self.__file_path, "w") as f:
+                f.write(users_json)
+            logging.info(f"User with ID '{user_id}' deleted successfully")
+            return 200
 
     def edit(self, user_id: User.id, username: str):
         current_users = self.get_all()
         if uuid.UUID(hex=user_id) in current_users:
+            logging.info(f"Editing user with ID '{user_id}' to set username to '{username}'")
             edited_users = []
             for user in current_users:
                 if user.id == uuid.UUID(hex=user_id):
@@ -57,3 +63,6 @@ class UserPersistenceFile(UserPersistenceInterface):
             users_json = json.dumps(users_info)
             with open(self.__file_path, "w") as f:
                 f.write(users_json)
+            logging.info(f"User with ID '{user_id}' edited successfully")
+        else:
+            logging.warning(f"User with ID '{user_id}' not found, unable to edit.")

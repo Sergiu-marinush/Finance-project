@@ -7,6 +7,10 @@ class InvalidUsername(Exception):
     pass
 
 
+class InvalidPersistenceInfo(Exception):
+    pass
+
+
 class UserFactory:
     def make_new(self, username: str) -> User:
         if len(username) < 6:
@@ -26,7 +30,17 @@ class UserFactory:
         return User(user_uuid, username)
 
     def make_from_persistence(self, info: tuple) -> User:
-        return User(
-            uuid=info[0],
-            username=info[1],
-        )
+        if len(info) != 2:
+            error_msg = "Persistence info should be a tuple with 2 elements"
+            logging.error(error_msg)
+            raise InvalidPersistenceInfo(error_msg)
+
+        uuid_str, username = info
+        try:
+            user_uuid = uuid.UUID(uuid_str)
+        except ValueError:
+            error_msg = f"Invalid UUID: {uuid_str}"
+            logging.error(error_msg)
+            raise InvalidPersistenceInfo(error_msg)
+
+        return User(user_uuid, username)

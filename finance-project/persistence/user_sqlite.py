@@ -49,10 +49,13 @@ class UserPersistenceSqlite(UserPersistenceInterface):
         with sqlite3.connect("main_users.db") as conn:
             cursor = conn.cursor()
             try:
+                logging.info(f"Updating user with id {user_id} with new username: {username}")
                 cursor.execute(f"UPDATE users SET (username)='{username}' WHERE id='{user_id}'")
             except sqlite3.OperationalError as e:
+                logging.error(f"Error updating user with id {user_id}: {e}")
                 raise e
             conn.commit()
+            logging.info(f"User with id {user_id} successfully updated with new username: {username}")
 
     def delete(self, user_id: User.id):
         with sqlite3.connect("main_users.db") as conn:

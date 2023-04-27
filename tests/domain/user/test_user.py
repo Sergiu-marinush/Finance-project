@@ -23,11 +23,12 @@ class UserTestCase(unittest.TestCase):
     def test_it_sets_the_stocks_we_give(self):
         id_ = uuid.uuid4()
         username = "Sergiu"
-        stock_list = ["stock1", "stock2", "stock3"]
-        user = User(id_, username, stock_list)
+        stocks = ["stock1", "stock2", "stock3"]
+        user = User(id_, username, stocks)
         actual = user.stocks
-        self.assertEqual(stock_list, actual)
+        self.assertEqual(stocks, actual)
         # set a list of 3 strings
+
 
 if __name__ == "__main__":
     unittest.main()

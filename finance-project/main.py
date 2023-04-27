@@ -9,6 +9,7 @@ from api.assets import assets_router
 from domain.user.factory import InvalidUsername
 from starlette.responses import JSONResponse
 
+from domain.user.repo import UserIdNotFound
 
 logging.basicConfig(
     filename="finance.log",
@@ -22,11 +23,18 @@ app = FastAPI(
     title="Fintech Portfolio API",
     description="A webserver with a REST API for keeping track of your different financial assets, "
     "stocks & crypto, and see/compare their evolution",
-    version="0.3.2",
+    version="0.3.3",
 )
 
 app.include_router(users_router)
 app.include_router(assets_router)
+
+
+@app.exception_handler(UserIdNotFound)
+def return_id_not_found(_: Request, e: UserIdNotFound):
+    error_message = "This user's id was not found! Error: " + str(e)
+    logging.error(error_message)
+    return JSONResponse(status_code=404, content=error_message)
 
 
 @app.exception_handler(InvalidUsername)

@@ -1,5 +1,6 @@
 import unittest
-from domain.user.factory import UserFactory, InvalidUsername
+import uuid
+from domain.user.factory import UserFactory, InvalidUsername, InvalidPersistenceInfo
 from domain.user.user import User
 
 
@@ -47,13 +48,24 @@ class UserFactoryTestCase(unittest.TestCase):
             str(context.exception),
         )
 
-    def test_make_from_persistence(self):
-        factory = UserFactory()
-        info = (123, "johndoe")
-        user = factory.make_from_persistence(info)
-        self.assertIsInstance(user, User)
-        self.assertEqual(user.id, 123)
-        self.assertEqual(user.username, "johndoe")
+    def test_make_from_persistence_with_valid_info(self):
+        user_factory = UserFactory()
+        valid_uuid = str(uuid.uuid4())
+        valid_username = "john_doe"
+        valid_info = (valid_uuid, valid_username)
+        result = user_factory.make_from_persistence(valid_info)
+        self.assertIsInstance(result, User)
+        self.assertEqual(str(result.id), valid_uuid)
+        self.assertEqual(result.username, valid_username)
+
+    def test_make_from_persistence_with_invalid_info(self):
+        user_factory = UserFactory()
+        invalid_uuid = "invalid-uuid"
+        invalid_username = "user%name"
+        invalid_info = (invalid_uuid, invalid_username)
+        with self.assertRaises(InvalidPersistenceInfo) as context:
+            user_factory.make_from_persistence(invalid_info)
+        self.assertEqual(str(context.exception), "Invalid UUID: {}".format(invalid_uuid))
 
 
 if __name__ == "__main__":

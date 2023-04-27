@@ -5,6 +5,7 @@ from domain.asset.repo import AssetRepo
 from domain.user.factory import UserFactory
 from domain.user.persistance_interface import UserPersistenceInterface
 from domain.user.user import User
+from persistence.user_sqlite import UserPersistenceSqlite
 from singleton import singleton
 
 
@@ -21,7 +22,7 @@ class UserIdNotFound(Exception):
 
 @singleton
 class UserRepo:
-    def __init__(self, persistence: UserPersistenceInterface):
+    def __init__(self, persistence: UserPersistenceSqlite):
         print("Init user repo")
         self.__persistence = persistence
         self.__users = None
